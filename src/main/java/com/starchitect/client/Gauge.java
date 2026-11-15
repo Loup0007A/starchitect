@@ -95,7 +95,11 @@ public final class Gauge {
         int cy = y + 24;
         Gfx.stars(g, x + 6, cy, 10, scoring.stars, -1, -1);
         Component est = Component.translatable("starchitect.gauge.estimate", scoring.total);
-        g.drawString(f, est, x + w - 6 - f.width(est), cy + 1, critic.color, false);
+        g.pose().pushPose();
+        g.pose().translate(x + w - 6 - f.width(est) * 0.75f, cy + 2, 0);
+        g.pose().scale(0.75f, 0.75f, 1f);
+        g.drawString(f, est, 0, 0, critic.color, false);
+        g.pose().popPose();
         cy += 14;
         Criterion weakest = Criterion.PALETTE;
         for (Criterion c : Criterion.values()) {
@@ -113,11 +117,12 @@ public final class Gauge {
             cy += 8;
         }
         cy += 3;
-        Component weak = Component.translatable("starchitect.gauge.weak", Component.translatable(weakest.key()).withStyle(ChatFormatting.BOLD));
+        Component weak = scoring.score(weakest) >= 8 ? Component.translatable("starchitect.tip.none").withStyle(ChatFormatting.ITALIC)
+            : Component.translatable("starchitect.gauge.weak", Component.translatable(weakest.key()).withStyle(ChatFormatting.BOLD));
         g.pose().pushPose();
         g.pose().translate(x + 6, cy, 0);
         g.pose().scale(0.75f, 0.75f, 1f);
-        g.drawString(f, weak, 0, 0, 0xFFB23A3A, false);
+        g.drawString(f, f.split(weak, (int) ((w - 12) / 0.75f)).get(0), 0, 0, scoring.score(weakest) >= 8 ? 0xFF3E8E41 : 0xFFB23A3A, false);
         g.drawString(f, Texts.critic(critic).copy().withStyle(ChatFormatting.ITALIC), 0, 11, Gfx.GREY, false);
         g.pose().popPose();
     }
