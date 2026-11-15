@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.Mod;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-/** Commandes client : /starchitect review | guide | read | critic | rename | forget | reset */
+/** Commandes client : /starchitect review | guide | read | show | gauge | critic | rename | forget | reset */
 @Mod.EventBusSubscriber(modid = Starchitect.MOD_ID, value = Dist.CLIENT)
 public final class StarCommands {
 
@@ -71,6 +71,19 @@ public final class StarCommands {
                     return 0;
                 }
                 later(() -> Minecraft.getInstance().setScreen(new NewspaperScreen(r, null, false)));
+                return 1;
+            }))
+            .then(Commands.literal("show").executes(ctx -> {
+                Review r = nearest();
+                if (r == null) {
+                    say(Component.translatable("starchitect.cmd.none"));
+                    return 0;
+                }
+                Highlights.show(r);
+                return 1;
+            }))
+            .then(Commands.literal("gauge").executes(ctx -> {
+                Gauge.toggle();
                 return 1;
             }))
             .then(Commands.literal("critic")

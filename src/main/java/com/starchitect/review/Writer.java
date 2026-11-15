@@ -107,6 +107,9 @@ public final class Writer {
         }
         if (remarks > 0) body.add(new Line(Line.BREAK));
 
+        r.tips = tips(s, sc, critic);
+        r.darkSpots = s.darkSpots.stream().mapToInt(Integer::intValue).toArray();
+
         // Verdict
         body.add(new Line(pick(rnd, "starchitect.verdict." + (sc.dirtHut ? "dirt" : String.valueOf(sc.stars))), name, sc.stars));
         return r;
@@ -138,6 +141,39 @@ public final class Writer {
 
     private static int pct(double v) {
         return (int) Math.round(v * 100);
+    }
+
+    /** Les conseils : les trois rubriques les plus faibles (pondérées par les goûts du critique). */
+    public static List<Line> tips(Survey s, Scoring sc, Critic critic) {
+        List<Line> out = new ArrayList<>();
+        if (sc.dirtHut) out.add(new Line("starchitect.tip.dirt"));
+        List<Criterion> crits = new ArrayList<>(List.of(Criterion.values()));
+        crits.sort(Comparator.comparingDouble((Criterion c) -> (sc.score(c) - 10) * critic.weight(c)));
+        for (Criterion c : crits) {
+            if (out.size() >= 3 || sc.score(c) >= 8) break;
+            if (sc.dirtHut && c == Criterion.PALETTE) continue;
+            Line l = tip(s, c);
+            if (l != null) out.add(l);
+        }
+        if (out.isEmpty()) out.add(new Line("starchitect.tip.none"));
+        return out;
+    }
+
+    private static Line tip(Survey s, Criterion c) {
+        int walls = Math.max(0, s.structural - s.stairs);
+        return switch (c) {
+            case PALETTE -> s.materialCount <= 2 ? new Line("starchitect.tip.palette.few", "#" + blockKey(s.dominantBlock))
+                : s.materialCount > 14 ? new Line("starchitect.tip.palette.many", s.materialCount)
+                : new Line("starchitect.tip.palette.dominant", "#" + blockKey(s.dominantBlock), pct(s.dominantShare));
+            case DETAIL -> new Line("starchitect.tip.detail", Math.max(4, (int) Math.ceil(s.structural * 0.15) - s.shapes - s.stairs));
+            case LIGHT -> s.dark > 0 ? new Line("starchitect.tip.light", s.dark) : new Line("starchitect.tip.light.none");
+            case WINDOWS -> s.glassRatio() > 0.4 ? new Line("starchitect.tip.windows.many")
+                : new Line("starchitect.tip.windows", Math.max(2, (int) Math.ceil(walls * 0.1) - s.glass));
+            case ROOF -> s.roofColumns == 0 ? new Line("starchitect.tip.roof.none") : new Line("starchitect.tip.roof");
+            case SYMMETRY -> new Line("starchitect.tip.symmetry");
+            case COMFORT -> new Line("starchitect.tip.comfort", s.furnitureKinds.size());
+            case GARDEN -> new Line("starchitect.tip.garden", s.plants);
+        };
     }
 
     private static List<Line> remarks(Survey s, Scoring sc, Random rnd) {

@@ -8,4 +8,5 @@
 - `analysis/` et `review/` (et `debug/TestBuilds`) restent du Java pur, sans classe de Minecraft : c'est ce qui permet `tools/offline.sh`.
 - Tout texte passe par `tools/lang.py` (FR + EN), puis `python3 tools/lang.py`. Une nouvelle phrase à variantes = une entrée `many(...)` ; `Variants.java` est généré.
 - Nouvelle version = `mod_version` dans `gradle.properties` + section `## x.y.z` en haut de `CHANGELOG.md` (notes GitHub et CurseForge).
+- Textures de l'interface générées par `python3 tools/textures.py` (Pillow), dessin commun dans `client/gui/Gfx.java`. Photos de presse : `client/Photos.java` (capture à `RenderLevelStageEvent.Stage.AFTER_LEVEL`, développée en sépia).
 - Le mod reste 100 % client : il observe le monde, ne le modifie jamais.

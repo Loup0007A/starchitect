@@ -24,6 +24,9 @@ Copiez le jar dans le dossier `mods/` (côté client uniquement). Les jars sont 
 - **Visites surprises** : toutes les 20 minutes (réglable), si vous êtes près d'une construction nouvelle ou modifiée, un critique s'annonce. Vous avez 10 secondes pour l'accueillir (ou partir en courant).
 - Revenez avec une construction améliorée : le critique s'en souvient (« on passe de 1 à 2 étoiles, quelqu'un a écouté »).
 - **H** ouvre le guide ; cliquez sur une critique pour la relire.
+- **Photo de presse** (1.1) : à son arrivée, le critique photographie la construction (flash !). La photo, développée en sépia avec du grain, illustre l'article et la fiche du guide.
+- **Les conseils du critique** (1.1) : chaque critique se termine par trois conseils concrets. Le bouton **Montrer** signale en rouge, pendant 30 secondes, chaque coin resté dans le noir.
+- **Mètre de chantier** (1.1, touche **G**) : une estimation en direct de la note de la construction où vous êtes, avec ses 8 rubriques et son point faible, mise à jour pendant que vous bâtissez.
 
 ### Les 8 rubriques
 
@@ -51,19 +54,19 @@ S'y ajoutent les goûts du critique, et quelques remarques : la cabane en terre 
 
 ## ⌨️ Commandes (client)
 
-`/starchitect review [critique]` · `/starchitect guide` · `/starchitect read` (relire la critique la plus proche) · `/starchitect critic <random|augustin|brigitte|gaston|zoe>` · `/starchitect rename <nom>` · `/starchitect forget` · `/starchitect reset`
+`/starchitect review [critique]` · `/starchitect guide` · `/starchitect read` (relire la critique la plus proche) · `/starchitect show` (montrer ses coins sombres) · `/starchitect gauge` · `/starchitect critic <random|augustin|brigitte|gaston|zoe>` · `/starchitect rename <nom>` · `/starchitect forget` · `/starchitect reset`
 
 ## ⚙️ Configuration
 
 `config/starchitect-client.toml` : `autoVisits`, `visitIntervalMinutes` (20), `announceSeconds` (10), `critic` (random), `scanRadius` (20), `minBlocks` (25), `particles`, `sounds`.
 
-Le guide est enregistré dans `.minecraft/starchitect/<monde ou serveur>.json`.
+Le guide est enregistré dans `.minecraft/starchitect/<monde ou serveur>.json`, les photos dans `.minecraft/starchitect/photos/`.
 
 ## 🔧 Développement
 
 - Java 21, Forge 1.21.1-52.0.7, mappings Parchment : c'est la variante de référence (`src/main`). Les autres cibles (NeoForge 1.21.1, Forge 1.20.1) sont fabriquées par `tools/port.py` (voir `targets/`).
 - L'analyse et la rédaction des critiques sont du Java pur (`analysis/`, `review/`) : `bash tools/offline.sh [fr|en]` construit les maisons de test, les fait critiquer et affiche les articles, sans Minecraft.
-- Textes FR + EN : `tools/lang.py` (génère aussi `review/Variants.java`). Logo : `tools/logo.py`.
+- Textes FR + EN : `tools/lang.py` (génère aussi `review/Variants.java`). Logo : `tools/logo.py`. Textures de l'interface (papier, sceaux, étoiles, ornements) : `tools/textures.py`.
 - **CI GitHub Actions** : un jar par cible, puis pour chaque cible un vrai serveur (qui bâtit une maison et une cabane en terre) et un vrai client qui les fait critiquer et photographie chaque écran (branche `ci-logs`). Ensuite : release GitHub, copies dans `releases/` et envoi sur **CurseForge** (voir [`curseforge/SETUP.md`](curseforge/SETUP.md)).
 
 Licence MIT.

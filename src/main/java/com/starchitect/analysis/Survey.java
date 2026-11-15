@@ -32,6 +32,8 @@ public final class Survey {
 
     /** Cases d'air intérieures, dont celles où l'on tient debout, dont celles dans le noir complet. */
     public int interior, standable, dark;
+    /** Coordonnées (x, y, z à la suite) de quelques cases intérieures dans le noir complet. */
+    public final List<Integer> darkSpots = new ArrayList<>();
     /** Colonnes couvertes d'un toit, dont celles dont le haut est un escalier ou une dalle. */
     public int roofColumns, slopedColumns;
     public double symmetry;

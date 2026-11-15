@@ -3,10 +3,12 @@ package com.starchitect.client;
 import com.starchitect.Starchitect;
 import com.starchitect.analysis.Analyzer;
 import com.starchitect.analysis.Survey;
+import com.starchitect.client.gui.Gfx;
 import com.starchitect.client.gui.GuideScreen;
 import com.starchitect.client.gui.NewspaperScreen;
 import com.starchitect.client.gui.Portraits;
 import com.starchitect.config.SConfig;
+import com.starchitect.platform.Platform;
 import com.starchitect.review.Critic;
 import com.starchitect.review.Review;
 import com.starchitect.review.Scoring;
@@ -140,7 +142,18 @@ public final class Visits {
         dim = dimension(mc().level);
     }
 
+    /** Flash de l'appareil photo (ticks restants). */
+    private static int flash;
+    private static int hudTicks;
+
+    static void flash() {
+        flash = 10;
+        sound(SoundEvents.SPYGLASS_USE, 1.8f);
+        sound(SoundEvents.BOOK_PAGE_TURN, 1.6f);
+    }
+
     public static void cancel() {
+        if (phase != Phase.IDLE) Photos.discard();
         phase = Phase.IDLE;
         scanner = null;
         survey = null;
@@ -152,6 +165,7 @@ public final class Visits {
         origin = mc().player.blockPosition();
         dim = dimension(mc().level);
         scanner = newScanner();
+        Photos.request();
         thought = null;
         thoughtTicks = 30;
         sound(SoundEvents.BOOK_PAGE_TURN, 0.8f);
@@ -202,6 +216,10 @@ public final class Visits {
         }
         while (ClientBoot.KEY_INVITE.consumeClick()) invite();
         while (ClientBoot.KEY_GUIDE.consumeClick()) mc.setScreen(new GuideScreen(null));
+        while (ClientBoot.KEY_GAUGE.consumeClick()) Gauge.toggle();
+        Gauge.tick();
+        if (flash > 0) flash--;
+        hudTicks = phase == Phase.IDLE ? 0 : hudTicks + 1;
 
         if (autoTimer < 0) autoTimer = SConfig.VISIT_INTERVAL.get() * 60 * 20;
         if (phase == Phase.IDLE) {
@@ -272,19 +290,22 @@ public final class Visits {
         Minecraft mc = mc();
         Level level = mc.level;
         Survey s = survey;
-        cancel();
+        survey = null;
+        scanner = null;
+        phase = Phase.IDLE;
         Review previous = Guide.near(dim(level), s.centerX(), s.centerZ(), 16);
         Scoring sc = Scoring.of(s, critic);
         String weather = level.isThundering() ? "starchitect.weather.thunder" : level.isRaining() ? "starchitect.weather.rain"
             : "starchitect.weather.clear";
         Review r = Writer.write(s, sc, critic,
             new Writer.Visit(timeKey(level), weather, level.getDayTime() / 24000L + 1, previous, level.getGameTime() ^ System.nanoTime()));
-        r.uid = UUID.randomUUID().toString().substring(0, 8);
+        r.uid = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
         r.dim = dim(level);
         r.x = s.centerX();
         r.y = s.centerY();
         r.z = s.centerZ();
         r.time = System.currentTimeMillis();
+        if (Photos.publish(r.uid)) r.photo = r.uid;
         Guide.publish(r, previous);
         Starchitect.LOGGER.info("Starchitect : {} → {} étoile(s) ({} / 100, {} blocs)", r.critic, r.stars, r.total, r.blocks);
 
@@ -318,35 +339,46 @@ public final class Visits {
     @SubscribeEvent
     public static void onHud(CustomizeGuiOverlayEvent.Chat event) {
     //#endif
-        if (phase == Phase.IDLE || mc().options.hideGui || mc().screen != null) return;
+        if (mc().options.hideGui || mc().screen != null) return;
         try {
-            hud(event.getGuiGraphics());
+            GuiGraphics g = event.getGuiGraphics();
+            Gauge.render(g);
+            if (phase != Phase.IDLE) hud(g, Platform.partialTick());
+            if (flash > 0) {
+                int a = (int) (Math.min(1f, (flash - Platform.partialTick()) / 10f) * 230);
+                if (a > 0) g.fill(0, 0, g.guiWidth(), g.guiHeight(), (a << 24) | 0xFFFFFF);
+            }
         } catch (Exception e) {
             Starchitect.LOGGER.error("Starchitect : HUD", e);
             cancel();
         }
     }
 
-    private static void hud(GuiGraphics g) {
+    private static void hud(GuiGraphics g, float partial) {
         Minecraft mc = mc();
         Font font = mc.font;
         int sw = g.guiWidth();
-        int w = 270, h = 46;
-        int x = (sw - w) / 2, y = 6;
-        g.fill(x - 1, y - 1, x + w + 1, y + h + 1, 0xFF2B2520);
-        g.fill(x, y, x + w, y + h, 0xF0F3EBD9);
-        g.fill(x, y, x + 3, y + h, critic.color);
-        Portraits.draw(g, critic, x + 8, y + 5, 3);
-        int tx = x + 52;
-        g.drawString(font, Texts.critic(critic).copy().withStyle(ChatFormatting.BOLD), tx, y + 5, 0xFF2B2520, false);
+        int w = 280, h = 52;
+        int x = (sw - w) / 2;
+        // le bandeau descend en glissant au début de la visite
+        float slide = Math.min(1f, (hudTicks + partial) / 8f);
+        int y = 6 - (int) ((h + 8) * (1 - slide) * (1 - slide));
+        Gfx.paper(g, x, y, w, h, true);
+        g.fill(x, y, x + 4, y + h, critic.color);
+        Portraits.draw(g, critic, x + 10, y + 8, 3);
+        int tx = x + 56;
+        g.drawString(font, Texts.critic(critic).copy().withStyle(ChatFormatting.BOLD), tx, y + 6, Gfx.INK, false);
+        g.pose().pushPose();
+        g.pose().translate(tx, y + 16, 0);
+        g.pose().scale(0.75f, 0.75f, 1f);
+        g.drawString(font, Component.translatable(critic.nameKey() + ".title").withStyle(ChatFormatting.ITALIC), 0, 0, Gfx.GREY, false);
+        g.pose().popPose();
         Component status;
         float progress;
         switch (phase) {
             case ANNOUNCED -> {
                 status = Component.translatable("starchitect.hud.arriving", Texts.critic(critic), (timer + 19) / 20);
-                progress = 0;
-                g.drawString(font, Component.translatable("starchitect.hud.arriving2", ClientBoot.KEY_INVITE.getTranslatedKeyMessage()),
-                    tx, y + 34, 0xFF6E6252, false);
+                progress = 1f - timer / (float) Math.max(1, SConfig.ANNOUNCE_SECONDS.get() * 20);
             }
             case SCANNING -> {
                 status = Component.translatable("starchitect.hud.inspecting");
@@ -357,18 +389,40 @@ public final class Visits {
                 progress = 1;
             }
         }
-        g.drawString(font, font.split(status, w - 58).get(0), tx, y + 16, 0xFF4A4036, false);
-        if (phase != Phase.ANNOUNCED) {
-            int bx = tx, by = y + 29, bw = w - 60;
-            g.fill(bx, by, bx + bw, by + 4, 0xFFD8CDB4);
-            g.fill(bx, by, bx + (int) (bw * progress), by + 4, critic.color);
-            if (phase == Phase.SCANNING && thought != null) {
-                Component t = Component.translatable(thought).withStyle(ChatFormatting.ITALIC);
-                g.drawString(font, font.split(t, w - 58).get(0), tx, y + 36, 0xFF6E6252, false);
-            } else if (phase == Phase.WRITING) {
-                String dots = ".".repeat(1 + (phaseTicks / 6) % 3);
-                g.drawString(font, "✎ " + dots, tx, y + 36, 0xFF6E6252, false);
-            }
+        g.drawString(font, font.split(status, w - 64).get(0), tx, y + 25, 0xFF4A4036, false);
+        // barre de progression, avec un reflet qui file
+        int bx = tx, by = y + 36, bw = w - 66;
+        g.fill(bx - 1, by - 1, bx + bw + 1, by + 5, 0xFF8C7F6A);
+        g.fill(bx, by, bx + bw, by + 4, 0xFFE4D9C0);
+        int fill = (int) (bw * progress);
+        g.fillGradient(bx, by, bx + fill, by + 4, critic.color | 0xFF000000, darker(critic.color));
+        float t = (mc.level == null ? 0 : (mc.level.getGameTime() % 40) + partial) / 40f;
+        int sx = bx + (int) (t * (fill + 20)) - 10;
+        if (fill > 6) g.fill(Math.max(bx, sx), by, Math.min(bx + fill, sx + 6), by + 4, 0x66FFFFFF);
+        // la loupe se promène au-dessus de la barre
+        if (phase == Phase.SCANNING) {
+            double a = (phaseTicks + partial) * 0.25;
+            Gfx.image(g, Gfx.MAGNIFIER, x + w - 22 + (float) Math.cos(a) * 3, y + 4 + (float) Math.sin(a * 1.3) * 2, 16, 16, 16, 16);
         }
+        Component bottom = null;
+        if (phase == Phase.ANNOUNCED) {
+            bottom = Component.translatable("starchitect.hud.arriving2", ClientBoot.KEY_INVITE.getTranslatedKeyMessage());
+        } else if (phase == Phase.SCANNING && thought != null) {
+            bottom = Component.literal("« ").append(Component.translatable(thought)).append(" »").withStyle(ChatFormatting.ITALIC);
+        } else if (phase == Phase.WRITING) {
+            bottom = Component.literal("✎ " + ".".repeat(1 + (phaseTicks / 6) % 3));
+        }
+        if (bottom != null) {
+            g.pose().pushPose();
+            g.pose().translate(tx, y + 43, 0);
+            g.pose().scale(0.75f, 0.75f, 1f);
+            g.drawString(font, font.split(bottom, (int) ((w - 64) / 0.75f)).get(0), 0, 0, Gfx.GREY, false);
+            g.pose().popPose();
+        }
+    }
+
+    private static int darker(int c) {
+        int r = (c >> 16 & 0xFF) * 3 / 4, gg = (c >> 8 & 0xFF) * 3 / 4, b = (c & 0xFF) * 3 / 4;
+        return 0xFF000000 | r << 16 | gg << 8 | b;
     }
 }

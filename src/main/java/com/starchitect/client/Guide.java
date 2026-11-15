@@ -57,7 +57,13 @@ public final class Guide {
         try {
             List<Review> list = GSON.fromJson(Files.readString(f, StandardCharsets.UTF_8), new TypeToken<List<Review>>() {}.getType());
             if (list != null) {
-                for (Review r : list) if (r != null && r.dim != null && r.body != null && r.scores != null) reviews.add(r);
+                for (Review r : list) {
+                    if (r == null || r.dim == null || r.body == null || r.scores == null) continue;
+                    // critiques écrites avant la 1.1
+                    if (r.tips == null) r.tips = new ArrayList<>();
+                    if (r.darkSpots == null) r.darkSpots = new int[0];
+                    reviews.add(r);
+                }
             }
         } catch (Exception e) {
             Starchitect.LOGGER.error("Starchitect : guide illisible ({})", f, e);
@@ -86,7 +92,10 @@ public final class Guide {
     /** Publie une critique (elle remplace celle de la visite précédente). */
     public static void publish(Review r, Review previous) {
         ensure();
-        if (previous != null) reviews.remove(previous);
+        if (previous != null) {
+            reviews.remove(previous);
+            if (previous.photo != null && !previous.photo.equals(r.photo)) Photos.delete(previous.photo);
+        }
         reviews.add(0, r);
         save();
     }
@@ -94,11 +103,13 @@ public final class Guide {
     public static void remove(Review r) {
         ensure();
         reviews.remove(r);
+        Photos.delete(r.photo);
         save();
     }
 
     public static void reset() {
         ensure();
+        for (Review r : reviews) Photos.delete(r.photo);
         reviews.clear();
         save();
     }

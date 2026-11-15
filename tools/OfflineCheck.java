@@ -99,6 +99,8 @@ public class OfflineCheck {
                 } else para.append(render(line, nm)).append(' ');
             }
             if (para.length() > 3) System.out.println(para);
+            for (Line t : r.tips) System.out.println("   ✎ " + render(t, nm));
+            System.out.println("   dark spots " + r.darkSpots.length / 3);
             System.out.println("   > " + (r.quote >= 0 ? render(r.body.get(r.quote), nm) : "-"));
         }
         return r;

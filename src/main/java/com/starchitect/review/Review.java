@@ -30,6 +30,12 @@ public final class Review {
     public long fingerprint;
     public int blocks;
     public boolean dirtHut;
+    /** Photo de presse (identifiant du fichier dans .minecraft/starchitect/photos), ou null. */
+    public String photo;
+    /** Les conseils du critique. */
+    public List<Line> tips = new ArrayList<>();
+    /** Coins dans le noir (x, y, z à la suite), pour les montrer dans le monde. */
+    public int[] darkSpots = new int[0];
 
     public Critic criticOrDefault() {
         Critic c = Critic.byId(critic);

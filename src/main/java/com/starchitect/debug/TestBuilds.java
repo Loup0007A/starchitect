@@ -83,7 +83,7 @@ public final class TestBuilds {
         return c;
     }
 
-    /** Une cabane en terre, sans fenêtre ni porte (une simple ouverture). */
+    /** Une cabane en terre, sans fenêtre, ni porte, ni lumière (une simple ouverture). */
     public static List<String> hut(int bx, int by, int bz) {
         List<String> c = new ArrayList<>();
         int x1 = bx + 3, x2 = bx + 7, z1 = bz - 2, z2 = bz + 2;
@@ -92,7 +92,6 @@ public final class TestBuilds {
         c.add(fill(bx - 3, by - 1, bz - 7, bx + 10, by - 1, bz + 7, "grass_block"));
         c.add(fill(x1, by, z1, x2, by + 3, z2, "dirt") + " hollow");
         c.add(fill(x1, by + 1, bz, x1, by + 2, bz, "air"));
-        c.add(set(x2 - 1, by + 1, bz, "torch"));
         return c;
     }
 

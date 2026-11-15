@@ -298,7 +298,14 @@ public final class Analyzer {
                     byte below = g.kind(x, y - 1, z);
                     if (below != Kind.AIR && below != Kind.SOFT && below != Kind.LIGHT) {
                         s.standable++;
-                        if (g.light[i] == 0) s.dark++;
+                        if (g.light[i] == 0) {
+                            s.dark++;
+                            if (s.darkSpots.size() < 48 * 3) {
+                                s.darkSpots.add(g.ox + x);
+                                s.darkSpots.add(g.oy + y);
+                                s.darkSpots.add(g.oz + z);
+                            }
+                        }
                     }
                 }
             }

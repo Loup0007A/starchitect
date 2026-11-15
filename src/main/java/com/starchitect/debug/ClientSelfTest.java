@@ -86,10 +86,20 @@ public final class ClientSelfTest {
             Starchitect.LOGGER.info("[CLIENTTEST] maison : {} étoile(s), {}/100, {} blocs", r.stars, r.total, r.blocks);
             check(r.stars >= 2, "la maison obtient au moins 2 étoiles (" + r.stars + ")");
             check(!r.dirtHut, "la maison n'est pas une cabane en terre");
+            check(r.photo != null && com.starchitect.client.Photos.texture(r.photo) != null, "photo de presse prise");
             shot("02_review_house");
         });
         step("défilement", 1, () -> paper().scrollBy(-20));
         step("défilement-capture", 4, () -> shot("02b_review_house_scrolled"));
+        step("mètre", 1, () -> {
+            mc().setScreen(null);
+            com.starchitect.client.Gauge.toggle();
+        });
+        step("mètre-capture", 100, () -> {
+            check(com.starchitect.client.Gauge.active(), "mètre de chantier actif");
+            shot("02c_gauge");
+            com.starchitect.client.Gauge.toggle();
+        });
         step("guide", 1, () -> mc().setScreen(new GuideScreen(null)));
         step("guide-capture", 10, () -> shot("03_guide"));
         step("vers la cabane", 1, () -> {
@@ -105,7 +115,22 @@ public final class ClientSelfTest {
             Starchitect.LOGGER.info("[CLIENTTEST] cabane : {} étoile(s), {}/100, {} blocs", r.stars, r.total, r.blocks);
             check(r.dirtHut, "la cabane en terre est reconnue");
             check(r.stars == 0, "la cabane n'a aucune étoile");
+            check(r.darkSpots.length >= 3, "coins sombres relevés (" + r.darkSpots.length / 3 + ")");
+            check(r.tips.size() >= 2, "conseils du critique (" + r.tips.size() + ")");
             shot("04_review_hut");
+        });
+        step("défilement-cabane", 1, () -> paper().scrollBy(-40));
+        step("défilement-cabane-capture", 4, () -> shot("04b_review_hut_tips"));
+        step("montrer", 1, () -> {
+            Review r = paper().review();
+            mc().setScreen(null);
+            com.starchitect.client.Highlights.show(r);
+            mc().player.connection.sendCommand("tp @s ~-2 ~ ~ -90 30");
+        });
+        step("montrer-capture", 40, () -> {
+            check(com.starchitect.client.Highlights.remaining() > 0, "coins sombres montrés");
+            shot("04c_show_dark_spots");
+            com.starchitect.client.Highlights.stop();
         });
         step("guide-2", 1, () -> mc().setScreen(new GuideScreen(null)));
         step("guide-2-capture", 10, () -> {

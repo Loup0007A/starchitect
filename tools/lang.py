@@ -598,6 +598,48 @@ many('starchitect.verdict.dirt', [
      'Verdict: no stars, but an honorary shovel, to rebuild everything.'),
 ])
 
+# ───────────────────────── 1.1 : conseils, photo, mètre de chantier ─────────────────────────
+one('starchitect.tips', 'LES CONSEILS DU CRITIQUE', 'THE CRITIC\'S ADVICE')
+one('starchitect.tip.none', 'Rien à redire. Surtout, ne touchez plus à rien !', 'Nothing to add. Above all, don\'t touch a thing!')
+one('starchitect.tip.dirt', 'Remplacez la terre : des planches, de la pierre taillée, n\'importe quoi d\'autre.',
+    'Replace the dirt: planks, stone bricks, anything else.')
+one('starchitect.tip.palette.few', 'Ajoutez deux ou trois matériaux pour accompagner « %1$s » : soubassement en pierre, poutres, encadrements.',
+    'Add two or three materials to go with %1$s: a stone base, beams, window frames.')
+one('starchitect.tip.palette.many', '%1$s matériaux, c\'est trop : gardez-en six ou sept qui vont ensemble.',
+    '%1$s materials is too many: keep six or seven that go together.')
+one('starchitect.tip.palette.dominant', '« %1$s » fait %2$s %% de la construction : variez avec un autre matériau pour les angles et les bordures.',
+    '%1$s makes up %2$s%% of the build: break it up with another material for corners and edges.')
+one('starchitect.tip.detail', 'Habillez la façade : environ %1$s escaliers, dalles, murets ou trappes de plus (corniches, rebords, poutres).',
+    'Dress up the facade: about %1$s more stairs, slabs, walls or trapdoors (cornices, sills, beams).')
+one('starchitect.tip.light', 'Éclairez les %1$s coins restés dans le noir (bouton « Montrer » : ils sont signalés en rouge).',
+    'Light up the %1$s pitch-dark spots (the "Show me" button marks them in red).')
+one('starchitect.tip.light.none', 'Ajoutez quelques lanternes ou torches : une maison sans lumière n\'accueille personne.',
+    'Add a few lanterns or torches: a house with no light welcomes no one.')
+one('starchitect.tip.windows', 'Percez environ %1$s fenêtres de plus (vitres ou panneaux de verre).', 'Add about %1$s more windows (glass or glass panes).')
+one('starchitect.tip.windows.many', 'Trop de verre : remplacez quelques vitres par des murs pleins.', 'Too much glass: swap a few panes for solid wall.')
+one('starchitect.tip.roof.none', 'Couvrez la construction : un toit en escaliers, en pente des deux côtés.', 'Put a roof on it: stairs, sloping down on both sides.')
+one('starchitect.tip.roof', 'Remplacez le toit plat par des escaliers en pente, avec une rangée de dalles au faîte.',
+    'Swap the flat roof for sloping stairs, with a row of slabs on the ridge.')
+one('starchitect.tip.symmetry', 'Équilibrez les deux moitiés de la façade : mêmes fenêtres, même largeur de chaque côté.',
+    'Balance both halves of the facade: same windows, same width on each side.')
+one('starchitect.tip.comfort', 'Meublez l\'intérieur (%1$s sorte(s) de meubles) : lit, coffre, établi, bibliothèque, tableau, pot de fleurs…',
+    'Furnish the inside (%1$s kind(s) of furniture): bed, chest, crafting table, bookshelf, painting, flower pot…')
+one('starchitect.tip.garden', 'Plantez autour (%1$s plante(s)) : fleurs, haies de feuilles, potager, chemin.',
+    'Plant things around it (%1$s plant(s)): flowers, leaf hedges, a vegetable patch, a path.')
+one('starchitect.button.show', 'Montrer', 'Show me')
+one('starchitect.show.started', '%s coins sombres signalés en rouge pendant 30 secondes.', '%s dark spots marked in red for 30 seconds.')
+one('starchitect.show.none', 'Aucun coin sombre à montrer : tout est éclairé.', 'No dark spot to show: everything is lit.')
+one('starchitect.photo.caption', 'Photo : notre envoyé spécial', 'Photo: our special correspondent')
+one('starchitect.photo.none', 'Pas de photo : le photographe était en grève', 'No photo: the photographer was on strike')
+one('key.starchitect.gauge', 'Mètre de chantier', 'Building gauge')
+one('starchitect.gauge.title', 'MÈTRE DE CHANTIER', 'BUILDING GAUGE')
+one('starchitect.gauge.estimate', 'Estimation : %s/100', 'Estimate: %s/100')
+one('starchitect.gauge.weak', 'Point faible : %s', 'Weak spot: %s')
+one('starchitect.gauge.none', 'Aucune construction ici', 'No build around here')
+one('starchitect.gauge.measuring', 'Mesure en cours…', 'Measuring…')
+one('starchitect.gauge.on', 'Mètre de chantier activé (%s pour le ranger).', 'Building gauge on (%s to put it away).')
+one('starchitect.gauge.off', 'Mètre de chantier rangé.', 'Building gauge put away.')
+
 
 def main():
     os.makedirs(LANG, exist_ok=True)

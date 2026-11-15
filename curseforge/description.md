@@ -20,6 +20,12 @@ Stand near something you built and press **J**. A critic arrives, monocle firmly
 
 **100% client-side**: works in singleplayer and on any server, even vanilla ones. It only looks at the world, it never changes it.
 
+### 📸 New in 1.1
+- **Press photo**: the critic snaps your build on arrival (flash!) and prints it in sepia in the article.
+- **The critic's advice**: up to 3 concrete tips per review, and a **Show me** button that marks every pitch-dark spot in red.
+- **Building gauge** (key **G**): a live estimate of your build's score while you build, with its weak spot.
+- All-new look: aged paper, drop cap, pull quote, animated stars and a seal stamped on the page.
+
 ### 🧐 What the critic looks at
 - **Palette**: how many materials, and whether one crushes the rest
 - **Depth**: stairs, slabs, walls, fences, trapdoors — does the facade breathe?
@@ -44,7 +50,7 @@ Plus special remarks: the **Golden Dirt Hut** award, the house with no door, the
 - Press **H** for the **Starchitect Guide**: every review of this world, your total stars and your title, from *Apprentice mason* to *Legend of the brick*.
 
 ### ⌨️ Commands
-`/starchitect review [critic]`, `guide`, `read`, `critic <name|random>`, `rename <name>`, `forget`, `reset`
+`/starchitect review [critic]`, `guide`, `read`, `show`, `gauge`, `critic <name|random>`, `rename <name>`, `forget`, `reset`
 
 ### 🌍 Languages
 English and French.
