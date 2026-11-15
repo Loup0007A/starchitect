@@ -131,6 +131,7 @@ public final class StarCommands {
             }))
             .then(Commands.literal("reset").executes(ctx -> {
                 Guide.reset();
+                Awards.reset();
                 say(Component.translatable("starchitect.cmd.reset"));
                 return 1;
             })));

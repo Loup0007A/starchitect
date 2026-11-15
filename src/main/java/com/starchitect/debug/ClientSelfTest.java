@@ -36,6 +36,7 @@ public final class ClientSelfTest {
     private static boolean built;
     private static int inGame, waited, failures;
     private static BlockPos base;
+    private static int hutY;
 
     private static Minecraft mc() {
         return Minecraft.getInstance();
@@ -51,7 +52,6 @@ public final class ClientSelfTest {
 
     private static void shot(String name) {
         Minecraft mc = mc();
-        mc.getToasts().clear();
         Screenshot.grab(mc.gameDirectory, name + ".png", mc.getMainRenderTarget(),
             c -> Starchitect.LOGGER.info("[CLIENTTEST] capture {}", name));
     }
@@ -74,6 +74,7 @@ public final class ClientSelfTest {
         base = mc().player.blockPosition();
         step("monde", 1, () -> {
             Guide.reset();
+            com.starchitect.client.Awards.reset();
             shot("00_world");
         });
         step("visite maison", 1, () -> Visits.invite(Critic.AUGUSTIN));
@@ -107,8 +108,10 @@ public final class ClientSelfTest {
             mc().player.connection.sendCommand("spreadplayers " + (base.getX() + TestBuilds.HUT_OFFSET) + " " + base.getZ()
                 + " 0 1 false @s");
         });
-        stepWhen("arrivée", () -> Math.abs(mc().player.getX() - (base.getX() + TestBuilds.HUT_OFFSET)) < 4, 40, () ->
-            mc().player.connection.sendCommand("tp @s ~ ~ ~ -90 15"));
+        stepWhen("arrivée", () -> Math.abs(mc().player.getX() - (base.getX() + TestBuilds.HUT_OFFSET)) < 4, 40, () -> {
+            hutY = mc().player.blockPosition().getY();
+            mc().player.connection.sendCommand("tp @s ~ ~ ~ -90 15");
+        });
         step("visite cabane", 40, () -> Visits.invite(Critic.BRIGITTE));
         stepWhen("journal cabane", () -> paper() != null && paper().revealed(), 20, () -> {
             Review r = paper().review();
@@ -131,6 +134,34 @@ public final class ClientSelfTest {
             check(com.starchitect.client.Highlights.remaining() > 0, "coins sombres montrés");
             shot("04c_show_dark_spots");
             com.starchitect.client.Highlights.stop();
+        });
+        // La cabane est rénovée (TestBuilds.renovation) puis critiquée à nouveau : avant / après
+        step("rénovation", 1, () -> {
+            for (String c : TestBuilds.renovation(base.getX() + TestBuilds.HUT_OFFSET, hutY, base.getZ())) {
+                mc().player.connection.sendCommand(c);
+            }
+        });
+        step("revisite", 30, () -> Visits.invite(Critic.GASTON));
+        stepWhen("journal revisite", () -> paper() != null && paper().revealed(), 20, () -> {
+            Review r = paper().review();
+            Starchitect.LOGGER.info("[CLIENTTEST] cabane rénovée : {} étoile(s), {}/100, style {}", r.stars, r.total, r.style);
+            check(!r.dirtHut, "la cabane rénovée n'est plus en terre");
+            check(r.previousStars == 0 && r.visits == 2, "deuxième visite reconnue");
+            check(r.previousPhoto != null && com.starchitect.client.Photos.texture(r.previousPhoto) != null, "photo d'avant conservée");
+            check(r.style != null, "style reconnu");
+            shot("07_before_after");
+        });
+        step("impression", 1, () -> paper().printForTest());
+        step("impression-vérif", 40, () -> {
+            java.io.File[] f = new java.io.File(mc().gameDirectory, "screenshots").listFiles((d, n) -> n.startsWith("starchitect_"));
+            check(f != null && f.length > 0, "une imprimée");
+            mc().setScreen(null);
+        });
+        step("distinctions", 60, () -> {
+            for (String id : new String[]{"first_review", "first_star", "three_stars", "dirt_hut", "comeback"}) {
+                check(com.starchitect.client.Awards.has(id), "distinction " + id);
+            }
+            shot("08_award_toasts");
         });
         step("guide-2", 1, () -> mc().setScreen(new GuideScreen(null)));
         step("guide-2-capture", 10, () -> {

@@ -43,6 +43,12 @@ public final class Guide {
         return k.replaceAll("[^A-Za-z0-9._-]", "_");
     }
 
+    /** Identifiant du monde ou du serveur courant (nom des fichiers). */
+    public static String key() {
+        ensure();
+        return key;
+    }
+
     private static Path file(String k) {
         return Minecraft.getInstance().gameDirectory.toPath().resolve("starchitect").resolve(k + ".json");
     }
@@ -94,7 +100,8 @@ public final class Guide {
         ensure();
         if (previous != null) {
             reviews.remove(previous);
-            if (previous.photo != null && !previous.photo.equals(r.photo)) Photos.delete(previous.photo);
+            // la photo d'avant reste (avant / après) ; celle d'avant-avant part
+            if (previous.previousPhoto != null && !previous.previousPhoto.equals(r.previousPhoto)) Photos.delete(previous.previousPhoto);
         }
         reviews.add(0, r);
         save();
@@ -104,12 +111,16 @@ public final class Guide {
         ensure();
         reviews.remove(r);
         Photos.delete(r.photo);
+        Photos.delete(r.previousPhoto);
         save();
     }
 
     public static void reset() {
         ensure();
-        for (Review r : reviews) Photos.delete(r.photo);
+        for (Review r : reviews) {
+            Photos.delete(r.photo);
+            Photos.delete(r.previousPhoto);
+        }
         reviews.clear();
         save();
     }

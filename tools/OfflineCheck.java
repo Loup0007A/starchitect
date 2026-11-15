@@ -33,6 +33,11 @@ public class OfflineCheck {
         for (Critic c : Critic.values()) {
             Review house = run("house", TestBuilds.house(0, 64, 0), c, c == Critic.AUGUSTIN);
             Review hut = run("hut", TestBuilds.hut(0, 64, 0), c, c == Critic.AUGUSTIN);
+            List<String> reno = new java.util.ArrayList<>(TestBuilds.hut(0, 64, 0));
+            reno.addAll(TestBuilds.renovation(0, 64, 0));
+            Review renovated = run("renovated", reno, c, c == Critic.GASTON);
+            System.out.println(c + " : cabane rénovée " + renovated.stars + "★ (" + renovated.total + ") style " + renovated.style);
+            if (renovated.stars < 1 || renovated.dirtHut) fails++;
             System.out.println(c + " : maison " + house.stars + "★ (" + house.total + ")  cabane " + hut.stars + "★ (" + hut.total + ")");
             if (house.stars < 2) fails++;
             if (hut.stars != 0 || !hut.dirtHut) fails++;
@@ -56,6 +61,7 @@ public class OfflineCheck {
             int x2 = fill ? Integer.parseInt(p[4]) : x1, y2 = fill ? Integer.parseInt(p[5]) : y1, z2 = fill ? Integer.parseInt(p[6]) : z1;
             String block = p[fill ? 7 : 4];
             boolean hollow = fill && p.length > 8 && p[8].equals("hollow");
+            String only = fill && p.length > 9 && p[8].equals("replace") ? p[9] : null;
             Matcher m = blockRe.matcher(block);
             m.matches();
             String path = m.group(1);
@@ -73,6 +79,7 @@ public class OfflineCheck {
                         String put = hollow && !edge ? "air" : path;
                         byte kk = hollow && !edge ? Kind.AIR : k;
                         int lx = x - g.ox, ly = y - g.oy, lz = z - g.oz;
+                        if (only != null && g.inside(lx, ly, lz) && !g.path(g.at(lx, ly, lz)).equals("minecraft:" + only)) continue;
                         if (g.inside(lx, ly, lz)) g.set(lx, ly, lz, "minecraft:" + put, kk, hollow && !edge ? 0 : emission);
                     }
         }

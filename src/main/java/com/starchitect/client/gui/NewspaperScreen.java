@@ -49,6 +49,9 @@ public class NewspaperScreen extends Screen {
     // mise en page (calculée dans init)
     private int left, top, paperW, paperH, colW, sideX, sideW, bodyTop, bodyBottom;
     private final List<Block> blocks = new ArrayList<>();
+    private final List<Button> buttons = new ArrayList<>();
+    /** Impression de la une : 2 = boutons masqués, en attente d'une image sans eux ; 1 = capture. */
+    private int printing;
 
     /** Un morceau de l'article : paragraphe (avec ou sans lettrine), exergue ou encadré de conseils. */
     private record Block(int kind, String cap, List<String> lines, List<List<String>> items) {
@@ -97,18 +100,26 @@ public class NewspaperScreen extends Screen {
         colW = inner - sideW - 12;
         sideX = left + 12 + colW + 12;
         boolean show = review.darkSpots != null && review.darkSpots.length >= 3;
-        int bw = 74, n = show ? 3 : 2;
+        int n = show ? 4 : 3;
+        int bw = Math.min(74, (paperW - 30) / n - 6);
         int bx = width / 2 - (n * bw + (n - 1) * 6) / 2, by = top + paperH - 24;
-        addRenderableWidget(Button.builder(Component.translatable("starchitect.button.guide"),
+        buttons.clear();
+        buttons.add(Button.builder(Component.translatable("starchitect.button.guide"),
             b -> minecraft.setScreen(new GuideScreen(this))).bounds(bx, by, bw, 18).build());
         if (show) {
-            addRenderableWidget(Button.builder(Component.translatable("starchitect.button.show"), b -> {
+            buttons.add(Button.builder(Component.translatable("starchitect.button.show"), b -> {
                 minecraft.setScreen(null);
                 Highlights.show(review);
-            }).bounds(bx + bw + 6, by, bw, 18).build());
+            }).bounds(0, by, bw, 18).build());
         }
-        addRenderableWidget(Button.builder(Component.translatable(parent == null ? "starchitect.button.close" : "starchitect.button.back"),
-            b -> onClose()).bounds(bx + (n - 1) * (bw + 6), by, bw, 18).build());
+        buttons.add(Button.builder(Component.translatable("starchitect.button.print"), b -> print()).bounds(0, by, bw, 18).build());
+        buttons.add(Button.builder(Component.translatable(parent == null ? "starchitect.button.close" : "starchitect.button.back"),
+            b -> onClose()).bounds(0, by, bw, 18).build());
+        for (int i = 0; i < buttons.size(); i++) {
+            Button b = buttons.get(i);
+            b.setX(bx + i * (bw + 6));
+            addRenderableWidget(b);
+        }
         layoutArticle();
     }
 
@@ -121,8 +132,26 @@ public class NewspaperScreen extends Screen {
         if (SConfig.SOUNDS.get()) minecraft.getSoundManager().play(SimpleSoundInstance.forUI(s, pitch));
     }
 
+    /** Imprime la une : une capture d'écran du journal, sans les boutons. */
+    private void print() {
+        printing = 2;
+        for (Button b : buttons) b.visible = false;
+    }
+
+    /** Pour le test automatique. */
+    public void printForTest() {
+        print();
+    }
+
     @Override
     public void tick() {
+        if (printing > 0 && --printing == 0) {
+            String name = "starchitect_" + (review.uid == null ? "page" : review.uid) + "_" + System.currentTimeMillis() % 100000 + ".png";
+            net.minecraft.client.Screenshot.grab(minecraft.gameDirectory, name, minecraft.getMainRenderTarget(),
+                msg -> minecraft.execute(() -> minecraft.gui.getChat().addMessage(Component.translatable("starchitect.print.done", msg))));
+            for (Button b : buttons) b.visible = true;
+            play(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 1.2f);
+        }
         float t = now();
         while (fresh && shownStars < review.stars && t >= starTime(shownStars + 1)) {
             shownStars++;
@@ -390,12 +419,33 @@ public class NewspaperScreen extends Screen {
         int sy = bodyTop;
         int ph = sideW * 9 / 16;
         ResourceLocation photo = Photos.texture(review.photo);
-        g.fill(sideX + 1, sy + 1, sideX + sideW + 3, sy + ph + 3, 0x40000000);
-        if (photo != null) Gfx.image(g, photo, sideX, sy, sideW, ph, Photos.W, Photos.H);
-        else Gfx.image(g, Gfx.NO_PHOTO, sideX, sy, sideW, ph, 128, 72);
-        g.renderOutline(sideX - 1, sy - 1, sideW + 2, ph + 2, INK);
+        ResourceLocation before = Photos.texture(review.previousPhoto);
+        Component cap;
+        if (before != null && photo != null) {
+            // avant / après, côte à côte
+            int hw = (sideW - 4) / 2, hh = hw * 9 / 16;
+            int y0 = sy + (ph - hh) / 2 - 6;
+            for (int i = 0; i < 2; i++) {
+                int px = sideX + i * (hw + 4);
+                g.fill(px + 1, y0 + 1, px + hw + 2, y0 + hh + 2, 0x40000000);
+                Gfx.image(g, i == 0 ? before : photo, px, y0, hw, hh, Photos.W, Photos.H);
+                g.renderOutline(px - 1, y0 - 1, hw + 2, hh + 2, INK);
+                Component tag = Component.translatable(i == 0 ? "starchitect.photo.before" : "starchitect.photo.after").withStyle(ChatFormatting.BOLD);
+                int tw = (int) (f.width(tag) * 0.75f) + 4;
+                g.fill(px, y0, px + tw, y0 + 8, i == 0 ? 0xE02B2520 : critic.color | 0xE0000000);
+                small(g, tag, px + 2, y0 + 1, 0xFFF3EBD9);
+            }
+            Component delta = Component.literal((review.previousStars >= 0 ? Texts.stars(review.previousStars) : "") + "  →  " + Texts.stars(review.stars));
+            g.drawString(f, delta, sideX + (sideW - f.width(delta)) / 2, y0 + hh + 4, GOLD, false);
+            cap = Component.translatable("starchitect.photo.compare", Math.max(0, review.previousTotal), review.total).withStyle(ChatFormatting.ITALIC);
+        } else {
+            g.fill(sideX + 1, sy + 1, sideX + sideW + 3, sy + ph + 3, 0x40000000);
+            if (photo != null) Gfx.image(g, photo, sideX, sy, sideW, ph, Photos.W, Photos.H);
+            else Gfx.image(g, Gfx.NO_PHOTO, sideX, sy, sideW, ph, 128, 72);
+            g.renderOutline(sideX - 1, sy - 1, sideW + 2, ph + 2, INK);
+            cap = Component.translatable(photo != null ? "starchitect.photo.caption" : "starchitect.photo.none").withStyle(ChatFormatting.ITALIC);
+        }
         sy += ph + 2;
-        Component cap = Component.translatable(photo != null ? "starchitect.photo.caption" : "starchitect.photo.none").withStyle(ChatFormatting.ITALIC);
         small(g, cap, sideX, sy + 1, GREY);
         sy += 10;
         Portraits.draw(g, critic, sideX + 2, sy + 2, 2);
@@ -408,6 +458,11 @@ public class NewspaperScreen extends Screen {
         }
         small(g, Component.translatable(critic.nameKey() + ".title").withStyle(ChatFormatting.ITALIC), nx, ny, GREY);
         sy = Math.max(sy + 30, ny + 10);
+        if (review.style != null) {
+            small(g, Component.translatable("starchitect.paper.style",
+                Component.translatable("starchitect.style." + review.style).withStyle(ChatFormatting.BOLD)), sideX, sy - 1, critic.color);
+            sy += 8;
+        }
         g.drawString(f, Component.translatable("starchitect.paper.sheet").withStyle(ChatFormatting.BOLD), sideX, sy, INK, false);
         Component total = Component.translatable("starchitect.paper.score", review.total);
         g.drawString(f, total, sideX + sideW - f.width(total), sy, critic.color, false);
@@ -429,6 +484,10 @@ public class NewspaperScreen extends Screen {
         }
         Component sig = Component.literal("— ").append(Texts.critic(critic)).withStyle(ChatFormatting.ITALIC);
         g.drawString(f, sig, right - 12 - f.width(sig), bodyBottom + 2, GREY, false);
+        if (printing > 0) {
+            // tampon « Starchitect » dans le coin de la une imprimée
+            Gfx.image(g, Gfx.seal(3, false), left + 6, bottom - 26, 20, 20, 96, 96, 0.9f);
+        }
     }
 
     private void small(GuiGraphics g, Component c, int x, int y, int color) {

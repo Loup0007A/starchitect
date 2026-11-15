@@ -26,6 +26,10 @@ Copiez le jar dans le dossier `mods/` (côté client uniquement). Les jars sont 
 - **H** ouvre le guide ; cliquez sur une critique pour la relire.
 - **Photo de presse** (1.1) : à son arrivée, le critique photographie la construction (flash !). La photo, développée en sépia avec du grain, illustre l'article et la fiche du guide.
 - **Les conseils du critique** (1.1) : chaque critique se termine par trois conseils concrets. Le bouton **Montrer** signale en rouge, pendant 30 secondes, chaque coin resté dans le noir.
+- **Styles** (1.2) : le critique reconnaît le style de la construction (médiéval, nordique, japonais, moderne, brutaliste, désertique, rustique…). Chaque critique a ses styles préférés.
+- **Avant / après** (1.2) : lors d'une nouvelle visite, le journal montre l'ancienne photo à côté de la nouvelle.
+- **Distinctions** (1.2) : 10 distinctions à obtenir (première étoile, copie parfaite, Cabane en terre d'or, le grand retour, tout le jury…), annoncées par une notification et rangées sur l'étagère du guide.
+- **Imprimer** (1.2) : le bouton enregistre la une dans le dossier des captures d'écran, prête à partager.
 - **Mètre de chantier** (1.1, touche **G**) : une estimation en direct de la note de la construction où vous êtes, avec ses 8 rubriques et son point faible, mise à jour pendant que vous bâtissez.
 
 ### Les 8 rubriques

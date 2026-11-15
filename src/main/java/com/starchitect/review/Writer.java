@@ -49,9 +49,11 @@ public final class Writer {
         r.fingerprint = s.fingerprint;
         r.blocks = s.blocks;
         r.dirtHut = sc.dirtHut;
+        r.style = sc.style.id();
         String name = "@name";
         if (v.previous() != null) {
             r.previousStars = v.previous().stars;
+            r.previousTotal = v.previous().total;
             r.visits = v.previous().visits + 1;
             r.customName = v.previous().customName;
         }
@@ -65,6 +67,11 @@ public final class Writer {
             int d = Integer.compare(sc.stars, v.previous().stars);
             String trend = d > 0 ? "up" : d < 0 ? "down" : "same";
             body.add(new Line(pick(rnd, "starchitect.revisit." + trend), v.previous().stars, sc.stars, r.visits));
+        }
+        // Style
+        if (sc.style != com.starchitect.analysis.Style.PREHISTORIC) {
+            body.add(new Line(pick(rnd, "starchitect.styleline." + sc.style.id())));
+            if (sc.styleLoved) body.add(new Line(pick(rnd, "starchitect.stylelove." + critic.id()), "#starchitect.stylen." + sc.style.id()));
         }
         body.add(new Line(Line.BREAK));
 

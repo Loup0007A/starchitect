@@ -10,21 +10,28 @@ import java.util.Set;
 public enum Critic {
     //                   palette detail light windows roof  sym  comfort garden
     AUGUSTIN(0xFF6B2D5C, new double[]{1.2, 1.3, 0.8, 1.0, 1.2, 1.6, 0.8, 0.8},
-        Set.of("stone", "quartz", "brick", "deepslate", "sandstone"), Set.of("cobble", "wool", "dirt", "mystery")),
+        Set.of("stone", "quartz", "brick", "deepslate", "sandstone"), Set.of("cobble", "wool", "dirt", "mystery"),
+        Set.of("classic", "medieval", "japanese")),
     BRIGITTE(0xFF5A6470, new double[]{0.8, 0.7, 1.0, 0.9, 0.6, 1.5, 0.9, 0.5},
         Set.of("concrete", "stone", "deepslate", "blackstone", "iron", "tuff"),
-        Set.of("oak", "spruce", "birch", "jungle", "acacia", "cherry", "wool", "dirt")),
+        Set.of("oak", "spruce", "birch", "jungle", "acacia", "cherry", "wool", "dirt"),
+        Set.of("brutalist", "modern", "industrial")),
     GASTON(0xFF7A4E22, new double[]{1.0, 1.0, 1.0, 0.8, 1.3, 0.6, 1.4, 1.6},
-        Set.of("oak", "spruce", "dark_oak", "birch", "cobble", "mossy", "mud"), Set.of("concrete", "quartz", "iron", "dirt")),
+        Set.of("oak", "spruce", "dark_oak", "birch", "cobble", "mossy", "mud"), Set.of("concrete", "quartz", "iron", "dirt"),
+        Set.of("rustic", "nordic", "medieval", "tropical")),
     ZOE(0xFF1F8A8A, new double[]{1.1, 0.9, 1.5, 1.6, 0.6, 1.0, 1.1, 0.9},
-        Set.of("glass", "quartz", "concrete", "copper", "cherry", "birch"), Set.of("cobble", "mossy", "dirt", "mud"));
+        Set.of("glass", "quartz", "concrete", "copper", "cherry", "birch"), Set.of("cobble", "mossy", "dirt", "mud"),
+        Set.of("modern", "japanese", "whimsical"));
 
     /** Couleur du critique (bandeau, portrait). */
     public final int color;
     private final double[] weights;
     public final Set<String> loves, hates;
+    /** Styles architecturaux préférés (voir analysis.Style). */
+    public final Set<String> styles;
 
-    Critic(int color, double[] weights, Set<String> loves, Set<String> hates) {
+    Critic(int color, double[] weights, Set<String> loves, Set<String> hates, Set<String> styles) {
+        this.styles = styles;
         this.color = color;
         this.weights = weights;
         this.loves = loves;

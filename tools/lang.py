@@ -640,6 +640,89 @@ one('starchitect.gauge.measuring', 'Mesure en cours…', 'Measuring…')
 one('starchitect.gauge.on', 'Mètre de chantier activé (%s pour le ranger).', 'Building gauge on (%s to put it away).')
 one('starchitect.gauge.off', 'Mètre de chantier rangé.', 'Building gauge put away.')
 
+# ───────────────────────── 1.2 : styles, avant/après, distinctions, impression ─────────────────────────
+STYLES = [
+    ('prehistoric', 'Préhistorique', 'Prehistoric', '', ''),
+    ('infernal', 'Gothique infernal', 'Infernal Gothic',
+     'Le style ? Gothique infernal : on sent la chaleur du Nether jusque dans les murs.',
+     'The style? Infernal Gothic: you can feel the Nether\'s heat in the very walls.'),
+    ('japanese', 'Japonais', 'Japanese',
+     'Le style japonais est assumé : bois clair, lignes nettes, une certaine idée de la sérénité.',
+     'The Japanese style is fully embraced: pale wood, crisp lines, a certain idea of serenity.'),
+    ('desert', 'Désertique', 'Desert',
+     'Un style désertique, tout en grès et en terre cuite : on cherche le chameau du regard.',
+     'A desert style, all sandstone and terracotta: my eyes searched for the camel.'),
+    ('brutalist', 'Brutaliste', 'Brutalist',
+     'Style brutaliste : du béton, de la pierre, et pas une concession à la joliesse.',
+     'Brutalist style: concrete, stone, and not a single concession to prettiness.'),
+    ('modern', 'Moderne', 'Modern',
+     'Un style résolument moderne : béton clair, quartz et grandes baies vitrées.',
+     'A resolutely modern style: pale concrete, quartz and large bay windows.'),
+    ('industrial', 'Industriel', 'Industrial',
+     'Style industriel : le fer et le cuivre donnent à l\'ensemble des airs d\'usine à vapeur.',
+     'Industrial style: iron and copper give the whole thing a steam-factory air.'),
+    ('whimsical', 'Féerique', 'Whimsical',
+     'Le style est féerique, presque sorti d\'un conte : couleurs vives et matériaux précieux.',
+     'The style is whimsical, straight out of a fairy tale: bright colours and precious materials.'),
+    ('nordic', 'Nordique', 'Nordic',
+     'Un style nordique : sapin sombre, soubassement de pierre et toit pentu pour la neige.',
+     'A Nordic style: dark spruce, a stone base and a steep roof for the snow.'),
+    ('medieval', 'Médiéval', 'Medieval',
+     'Le style est médiéval : la pierre en bas, le bois en haut, comme au bon vieux temps des châteaux.',
+     'The style is medieval: stone below, timber above, like in the good old days of castles.'),
+    ('tropical', 'Tropical', 'Tropical',
+     'Un style tropical : bois de jungle et d\'acacia, on entend presque les perroquets.',
+     'A tropical style: jungle and acacia wood, you can almost hear the parrots.'),
+    ('rustic', 'Rustique', 'Rustic',
+     'Style rustique : du bois, du bois et encore du bois, comme un chalet de montagne.',
+     'Rustic style: wood, wood and more wood, like a mountain chalet.'),
+    ('classic', 'Classique', 'Classic',
+     'Un style classique, tout en pierre : sobre, solide, intemporel.',
+     'A classic style, all in stone: sober, solid, timeless.'),
+    ('eclectic', 'Éclectique', 'Eclectic',
+     'Le style ? Éclectique, disons. Chaque mur semble venir d\'une époque différente.',
+     'The style? Eclectic, let\'s say. Each wall seems to come from a different era.'),
+]
+for sid, fr, en, lfr, len_ in STYLES:
+    one(f'starchitect.style.{sid}', fr, en)
+    one(f'starchitect.stylen.{sid}', fr.lower(), en)
+    if lfr:
+        many(f'starchitect.styleline.{sid}', [(lfr, len_)])
+many('starchitect.stylelove.augustin', [('Le style %1$s, enfin ! Voilà qui me réconcilie avec mon époque.',
+                                          'The %1$s style, at last! It reconciles me with my era.')])
+many('starchitect.stylelove.brigitte', [('Le style %1$s : exactement ce que je défends depuis trente ans.',
+                                          'The %1$s style: exactly what I have championed for thirty years.')])
+many('starchitect.stylelove.gaston', [('Ah, le style %1$s… Ça me rappelle la ferme de mon grand-père.',
+                                        'Ah, the %1$s style… It reminds me of my grandfather\'s farm.')])
+many('starchitect.stylelove.zoe', [('Le style %1$s, c\'est tout moi. Je valide à cent pour cent.',
+                                     'The %1$s style is so me. One hundred percent approved.')])
+one('starchitect.paper.style', 'Style : %s', 'Style: %s')
+one('starchitect.photo.before', 'AVANT', 'BEFORE')
+one('starchitect.photo.after', 'APRÈS', 'AFTER')
+one('starchitect.photo.compare', 'Avant / après : %1$s → %2$s points', 'Before / after: %1$s → %2$s points')
+one('starchitect.button.print', 'Imprimer', 'Print')
+one('starchitect.print.done', 'La une est imprimée : %s', 'Front page printed: %s')
+
+one('starchitect.awards', 'DISTINCTIONS', 'DISTINCTIONS')
+one('starchitect.awards.count', '%1$s / %2$s', '%1$s / %2$s')
+one('starchitect.award.toast', 'Distinction obtenue !', 'Distinction earned!')
+one('starchitect.award.locked', 'À débloquer', 'Locked')
+AWARDS = [
+    ('first_review', 'Premier article', 'First article', 'Faire critiquer une construction.', 'Have a build reviewed.'),
+    ('first_star', 'Première étoile', 'First star', 'Obtenir une étoile.', 'Earn a star.'),
+    ('three_stars', 'Trois étoiles', 'Three stars', 'Obtenir trois étoiles.', 'Earn three stars.'),
+    ('perfect', 'Copie parfaite', 'Flawless', 'Obtenir 100/100.', 'Score 100/100.'),
+    ('dirt_hut', 'Cabane en terre d\'or', 'Golden Dirt Hut', 'Faire critiquer une cabane en terre.', 'Have a dirt hut reviewed.'),
+    ('comeback', 'Le grand retour', 'The comeback', 'Gagner des étoiles lors d\'une nouvelle visite.', 'Gain stars on a return visit.'),
+    ('all_critics', 'Tout le jury', 'The full jury', 'Être critiqué par les quatre critiques.', 'Be reviewed by all four critics.'),
+    ('styles', 'Touche-à-tout', 'Jack of all styles', 'Quatre styles différents dans le guide.', 'Four different styles in the guide.'),
+    ('collection', 'Promoteur immobilier', 'Property developer', 'Cinq constructions dans le guide.', 'Five builds in the guide.'),
+    ('night_owl', 'Visite nocturne', 'Night visit', 'Recevoir un critique en pleine nuit.', 'Host a critic in the dead of night.'),
+]
+for aid, fr, en, dfr, den in AWARDS:
+    one(f'starchitect.award.{aid}', fr, en)
+    one(f'starchitect.award.{aid}.desc', dfr, den)
+
 
 def main():
     os.makedirs(LANG, exist_ok=True)

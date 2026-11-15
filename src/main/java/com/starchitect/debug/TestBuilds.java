@@ -95,6 +95,29 @@ public final class TestBuilds {
         return c;
     }
 
+    /** La cabane rénovée (après {@link #hut}) : planches, toit en dalles, sol de pierre, porte, fenêtres, meubles. */
+    public static List<String> renovation(int bx, int by, int bz) {
+        List<String> c = new ArrayList<>();
+        int x1 = bx + 3, x2 = bx + 7, z1 = bz - 2, z2 = bz + 2;
+        c.add(fill(x1, by, z1, x2, by + 3, z2, "oak_planks") + " replace dirt");
+        c.add(fill(x1, by + 3, z1, x2, by + 3, z2, "spruce_slab[type=bottom]") + " replace oak_planks");
+        c.add(fill(x1, by, z1, x2, by, z2, "stone_bricks") + " replace oak_planks");
+        for (int x : new int[]{x1, x2}) for (int z : new int[]{z1, z2}) c.add(fill(x, by, z, x, by + 3, z, "spruce_log[axis=y]"));
+        c.add(set(x1, by + 1, bz, "oak_door[facing=west,half=lower]"));
+        c.add(set(x1, by + 2, bz, "oak_door[facing=west,half=upper]"));
+        for (int x : new int[]{x1 + 1, x2 - 1}) {
+            c.add(set(x, by + 2, z1, "glass_pane"));
+            c.add(set(x, by + 2, z2, "glass_pane"));
+        }
+        c.add(set(x2, by + 2, bz, "glass_pane"));
+        c.add(set(x2 - 1, by + 1, bz, "lantern"));
+        c.add(set(x1 + 1, by + 1, z1 + 1, "crafting_table"));
+        c.add(set(x1 + 1, by + 1, z2 - 1, "chest[facing=north]"));
+        c.add(set(x2 - 1, by + 1, z1 + 1, "barrel[facing=up]"));
+        for (int z = z1 - 1; z <= z2 + 1; z++) c.add(set(x1 - 1, by, z, z % 2 == 0 ? "poppy" : "dandelion"));
+        return c;
+    }
+
     private static String fill(int x1, int y1, int z1, int x2, int y2, int z2, String block) {
         return "fill " + x1 + " " + y1 + " " + z1 + " " + x2 + " " + y2 + " " + z2 + " " + block;
     }

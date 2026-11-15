@@ -15,6 +15,9 @@ public final class Scoring {
     public double loved, hated;
     public String lovedFamily, hatedFamily;
     public boolean dirtHut;
+    public com.starchitect.analysis.Style style;
+    /** Le critique adore ce style. */
+    public boolean styleLoved;
 
     public double score(Criterion c) {
         return scores[c.ordinal()];
@@ -59,6 +62,11 @@ public final class Scoring {
             }
         }
         total += 12 * Math.min(1, r.loved * 2) - 12 * Math.min(1, r.hated * 2);
+
+        // Style
+        r.style = com.starchitect.analysis.Style.detect(s);
+        r.styleLoved = critic.styles.contains(r.style.id());
+        if (r.styleLoved) total += 4;
 
         // Petits plus, gros moins
         if (s.cat || s.dog || s.parrot) total += 3;

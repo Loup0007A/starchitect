@@ -152,6 +152,29 @@ public class GuideScreen extends Screen {
         }
         y += 33;
         g.hLine(left + 8, right - 9, y, RULE);
+        // étagère des distinctions
+        java.util.Set<String> got = com.starchitect.client.Awards.unlocked();
+        Component lbl = Component.translatable("starchitect.awards").withStyle(ChatFormatting.BOLD);
+        g.drawString(f, lbl, left + 12, y + 8, INK, false);
+        Component cnt = Component.translatable("starchitect.awards.count", got.size(), com.starchitect.client.Awards.ALL.size());
+        g.drawString(f, cnt, left + 12, y + 18, GREY, false);
+        int ax = left + 18 + Math.max(f.width(lbl), f.width(cnt));
+        int step = Math.min(22, (right - 12 - ax) / com.starchitect.client.Awards.ALL.size());
+        for (String id : com.starchitect.client.Awards.ALL) {
+            boolean on = got.contains(id);
+            if (!on) g.fill(ax + 2, y + 6, ax + step - 2, y + 24, 0x14000000);
+            Gfx.image(g, AwardToast.seal(id), ax, y + 4, step, step, 96, 96, on ? 1f : 0.22f);
+            if (mx >= ax && mx < ax + step && my >= y + 4 && my < y + 4 + step) {
+                List<FormattedCharSequence> tip = new java.util.ArrayList<>();
+                tip.add(Component.translatable("starchitect.award." + id).withStyle(on ? ChatFormatting.GOLD : ChatFormatting.GRAY).getVisualOrderText());
+                tip.add(Component.translatable("starchitect.award." + id + ".desc").getVisualOrderText());
+                if (!on) tip.add(Component.translatable("starchitect.award.locked").withStyle(ChatFormatting.ITALIC, ChatFormatting.DARK_GRAY).getVisualOrderText());
+                setTooltipForNextRenderPass(tip);
+            }
+            ax += step;
+        }
+        y += 28;
+        g.hLine(left + 8, right - 9, y, RULE);
         listTop = y + 3;
         listBottom = bottom - 30;
 

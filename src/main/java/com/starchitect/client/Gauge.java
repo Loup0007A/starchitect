@@ -80,7 +80,8 @@ public final class Gauge {
         Minecraft mc = Minecraft.getInstance();
         Font f = mc.font;
         int w = 132, h = scoring == null ? 34 : 122;
-        int x = g.guiWidth() - w - 6, y = 6;
+        // en haut à gauche : la droite est aux notifications
+        int x = 6, y = 6;
         Gfx.paper(g, x, y, w, h, true);
         g.fill(x, y, x + w, y + 2, critic.color);
         Component title = Component.translatable("starchitect.gauge.title").withStyle(ChatFormatting.BOLD);

@@ -218,6 +218,7 @@ public final class Visits {
         while (ClientBoot.KEY_GUIDE.consumeClick()) mc.setScreen(new GuideScreen(null));
         while (ClientBoot.KEY_GAUGE.consumeClick()) Gauge.toggle();
         Gauge.tick();
+        Awards.tick();
         if (flash > 0) flash--;
         hudTicks = phase == Phase.IDLE ? 0 : hudTicks + 1;
 
@@ -306,7 +307,9 @@ public final class Visits {
         r.z = s.centerZ();
         r.time = System.currentTimeMillis();
         if (Photos.publish(r.uid)) r.photo = r.uid;
+        if (previous != null) r.previousPhoto = previous.photo;
         Guide.publish(r, previous);
+        Awards.onReview(r, timeKey(level).equals("starchitect.time.night"));
         Starchitect.LOGGER.info("Starchitect : {} → {} étoile(s) ({} / 100, {} blocs)", r.critic, r.stars, r.total, r.blocks);
 
         // Un petit feu d'artifice (ou un nuage de fumée) au-dessus de la construction

@@ -20,6 +20,12 @@ Stand near something you built and press **J**. A critic arrives, monocle firmly
 
 **100% client-side**: works in singleplayer and on any server, even vanilla ones. It only looks at the world, it never changes it.
 
+### 🏅 New in 1.2
+- **Architectural styles**: Medieval, Nordic, Japanese, Modern, Brutalist, Desert, Rustic… each critic has favourites.
+- **Before / after**: on a return visit, the old photo sits next to the new one.
+- **10 distinctions** with toasts and a shelf in the Guide.
+- **Print** the front page to share it.
+
 ### 📸 New in 1.1
 - **Press photo**: the critic snaps your build on arrival (flash!) and prints it in sepia in the article.
 - **The critic's advice**: up to 3 concrete tips per review, and a **Show me** button that marks every pitch-dark spot in red.

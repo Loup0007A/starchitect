@@ -32,6 +32,12 @@ public final class Review {
     public boolean dirtHut;
     /** Photo de presse (identifiant du fichier dans .minecraft/starchitect/photos), ou null. */
     public String photo;
+    /** Photo de la visite précédente (avant / après), ou null. */
+    public String previousPhoto;
+    /** Note de la visite précédente (-1 = première visite). */
+    public int previousTotal = -1;
+    /** Style architectural (voir analysis.Style). */
+    public String style;
     /** Les conseils du critique. */
     public List<Line> tips = new ArrayList<>();
     /** Coins dans le noir (x, y, z à la suite), pour les montrer dans le monde. */
