@@ -28,7 +28,11 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiEvent;
+//#if mc1201 || neoforge
+//$$ import net.minecraftforge.client.event.RenderGuiEvent;
+//#else
+import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
+//#endif
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -306,8 +310,14 @@ public final class Visits {
 
     // ───────────────────────── HUD ─────────────────────────
 
+    //#if mc1201 || neoforge
+    //$$ @SubscribeEvent
+    //$$ public static void onHud(RenderGuiEvent.Post event) {
+    //#else
+    /** Forge 1.21 n'a plus d'événement « fin du HUD » : on se greffe sur la couche du chat, dessinée à chaque image. */
     @SubscribeEvent
-    public static void onHud(RenderGuiEvent.Post event) {
+    public static void onHud(CustomizeGuiOverlayEvent.Chat event) {
+    //#endif
         if (phase == Phase.IDLE || mc().options.hideGui || mc().screen != null) return;
         try {
             hud(event.getGuiGraphics());
