@@ -73,10 +73,9 @@ public class OfflineCheck {
                         String put = hollow && !edge ? "air" : path;
                         byte kk = hollow && !edge ? Kind.AIR : k;
                         int lx = x - g.ox, ly = y - g.oy, lz = z - g.oz;
-                        if (g.inside(lx, ly, lz)) g.set(lx, ly, lz, "minecraft:" + put, kk, 0);
+                        if (g.inside(lx, ly, lz)) g.set(lx, ly, lz, "minecraft:" + put, kk, hollow && !edge ? 0 : emission);
                     }
         }
-        light(g);
         Survey s = Analyzer.analyze(g, 20, 20, 12);
         Scoring sc = Scoring.of(s, critic);
         Review r = Writer.write(s, sc, critic, new Writer.Visit("starchitect.time.day", "starchitect.weather.clear", 3, null, 42));

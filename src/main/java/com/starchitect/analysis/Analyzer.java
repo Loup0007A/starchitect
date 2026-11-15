@@ -32,6 +32,7 @@ public final class Analyzer {
      */
     public static Survey analyze(Grid g, int cx, int cz, int near) {
         resolve(g);
+        propagateLight(g);
         int n = g.kind.length;
         int[] comp = new int[n];
         List<int[]> comps = new ArrayList<>(); // {taille, distance min²}
@@ -114,6 +115,37 @@ public final class Analyzer {
             }
         }
         for (int i : placed) g.kind[i] = Kind.PLACED_DIRT;
+    }
+
+    /** Bloque la lumière (approximation : blocs pleins, escaliers et dalles). */
+    private static boolean opaque(byte k) {
+        return k == Kind.SOLID || k == Kind.NATURAL || k == Kind.DIRT || k == Kind.LOG || k == Kind.PLACED_DIRT
+            || k == Kind.STAIR;
+    }
+
+    /**
+     * Lumière des blocs, propagée comme dans le jeu (−1 par case). En entrée, {@link Grid#light} contient
+     * la lumière émise par chaque bloc ; en sortie, la lumière reçue. Calculée ici plutôt que lue dans le
+     * jeu : le client n'a pas toujours fini de l'éclairer, et le résultat ne dépend ainsi que des blocs.
+     */
+    public static void propagateLight(Grid g) {
+        java.util.ArrayDeque<Integer> q = new java.util.ArrayDeque<>();
+        for (int i = 0; i < g.light.length; i++) if (g.light[i] > 1) q.add(i);
+        int[][] d = {{1, 0, 0}, {-1, 0, 0}, {0, 1, 0}, {0, -1, 0}, {0, 0, 1}, {0, 0, -1}};
+        while (!q.isEmpty()) {
+            int i = q.poll();
+            int x = i % g.sx, z = (i / g.sx) % g.sz, y = i / (g.sx * g.sz);
+            int v = g.light[i] - 1;
+            if (v <= 0) continue;
+            for (int[] o : d) {
+                int X = x + o[0], Y = y + o[1], Z = z + o[2];
+                if (!g.inside(X, Y, Z)) continue;
+                int j = g.at(X, Y, Z);
+                if (opaque(g.kind[j]) || g.light[j] >= v) continue;
+                g.light[j] = (byte) v;
+                q.add(j);
+            }
+        }
     }
 
     private static boolean builtNeighbour(Grid g, int x, int y, int z) {
@@ -253,7 +285,7 @@ public final class Analyzer {
                     for (int[] dir : dirs) {
                         for (int step = 1; step <= 12; step++) {
                             int X = x + dir[0] * step, Z = z + dir[1] * step;
-                            if (!g.inside(X, y, Z)) break;
+                            if (X < minX || X > maxX || Z < minZ || Z > maxZ) break;
                             if (Kind.wall(g.kind[g.at(X, y, Z)])) {
                                 walls++;
                                 break;

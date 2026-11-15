@@ -51,6 +51,10 @@ public final class ServerSelfTest {
         BlockPos spawn = level.getSharedSpawnPos();
         int by = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, spawn.getX(), spawn.getZ());
         int bx = spawn.getX(), bz = spawn.getZ();
+        // 1.20.5+ : seuls 2 tronçons autour du point d'apparition restent chargés ; on génère ceux du décor
+        for (int cx = (bx - 8) >> 4; cx <= (bx + TestBuilds.HUT_OFFSET + 16) >> 4; cx++) {
+            for (int cz = (bz - 12) >> 4; cz <= (bz + 12) >> 4; cz++) level.getChunk(cx, cz);
+        }
         for (String c : TestBuilds.house(bx, by, bz)) run(server, c);
         int hy = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, bx + TestBuilds.HUT_OFFSET, bz);
         for (String c : TestBuilds.hut(bx + TestBuilds.HUT_OFFSET, hy, bz)) run(server, c);

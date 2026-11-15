@@ -87,10 +87,10 @@ one('starchitect.critic.zoe', 'Zoé Néon', 'Zoé Neon')
 one('starchitect.critic.zoe.title', 'Design & tendances', 'Design & trends')
 
 # ───────────────────────── Visite ─────────────────────────
-one('starchitect.hud.arriving', '%1$s arrive dans %2$s s', '%1$s arrives in %2$s s')
+one('starchitect.hud.arriving', 'Arrivée dans %2$s s…', 'Arriving in %2$s s…')
 one('starchitect.hud.arriving2', '%s pour l\'accueillir tout de suite', '%s to welcome them right away')
-one('starchitect.hud.inspecting', '%s inspecte votre construction', '%s is inspecting your build')
-one('starchitect.hud.writing', '%s rédige sa critique…', '%s is writing the review…')
+one('starchitect.hud.inspecting', 'Inspection de votre construction…', 'Inspecting your build…')
+one('starchitect.hud.writing', 'Rédaction de la critique…', 'Writing the review…')
 many('starchitect.think', [
     ('Hmm.', 'Hmm.'),
     ('Tiens, tiens…', 'Well, well…'),

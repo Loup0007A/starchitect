@@ -228,7 +228,8 @@ public class NewspaperScreen extends Screen {
         sy = Math.max(sy + 30, ny + 2);
         g.drawString(f, Component.translatable("starchitect.paper.sheet").withStyle(ChatFormatting.BOLD), sideX, sy, INK, false);
         Component total = Component.translatable("starchitect.paper.score", review.total);
-        g.drawString(f, total, sideX + sideW - f.width(total), sy, critic.color, false);
+        sy += 10;
+        g.drawString(f, total, sideX, sy, critic.color, false);
         sy += 11;
         int barX = sideX + sideW - 46;
         for (Criterion c : Criterion.values()) {
@@ -247,7 +248,7 @@ public class NewspaperScreen extends Screen {
                 .withStyle(ChatFormatting.ITALIC);
             List<FormattedCharSequence> ql = f.split(q, sideW - 8);
             int lines = Math.min(ql.size(), Math.max(0, (bodyBottom - sy - 4) / 9));
-            if (lines >= 2) {
+            if (lines >= ql.size()) {
                 g.fill(sideX, sy - 2, sideX + 2, sy + lines * 9, critic.color);
                 for (int i = 0; i < lines; i++) {
                     FormattedCharSequence s = ql.get(i);

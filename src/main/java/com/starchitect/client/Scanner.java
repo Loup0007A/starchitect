@@ -10,7 +10,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
@@ -66,9 +65,7 @@ public final class Scanner {
                 int i = grid.at(x, y, z);
                 grid.kind[i] = k;
                 grid.id[i] = id(st);
-                if (k != Kind.NATURAL && k != Kind.DIRT && k != Kind.LOG) {
-                    grid.light[i] = (byte) level.getBrightness(LightLayer.BLOCK, p);
-                }
+                grid.light[i] = (byte) emission(st);
                 if (sparks > 0 && Kind.built(k) && k != Kind.LIGHT) {
                     seen++;
                     if (rnd.nextInt(seen) < sparks && level.getBlockState(p.above()).isAir()) {
@@ -80,6 +77,12 @@ public final class Scanner {
             }
         }
         if (done()) things();
+    }
+
+    private final Map<BlockState, Integer> emissions = new IdentityHashMap<>();
+
+    private int emission(BlockState st) {
+        return emissions.computeIfAbsent(st, s -> s.getLightEmission());
     }
 
     private short id(BlockState st) {

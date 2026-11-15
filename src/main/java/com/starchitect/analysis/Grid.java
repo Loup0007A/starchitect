@@ -13,7 +13,7 @@ public final class Grid {
     public final byte[] kind;
     /** Indice dans {@link #ids} du bloc de chaque case. */
     public final short[] id;
-    /** Lumière des blocs (torches…) de chaque case, 0-15. */
+    /** Lumière émise par chaque bloc (0-15) ; après l'analyse, lumière reçue (voir Analyzer.propagateLight). */
     public final byte[] light;
     public final List<String> ids = new ArrayList<>();
     private final Map<String, Short> index = new HashMap<>();

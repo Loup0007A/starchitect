@@ -331,7 +331,7 @@ public final class Visits {
         Minecraft mc = mc();
         Font font = mc.font;
         int sw = g.guiWidth();
-        int w = 220, h = 46;
+        int w = 270, h = 46;
         int x = (sw - w) / 2, y = 6;
         g.fill(x - 1, y - 1, x + w + 1, y + h + 1, 0xFF2B2520);
         g.fill(x, y, x + w, y + h, 0xF0F3EBD9);
@@ -349,11 +349,11 @@ public final class Visits {
                     tx, y + 34, 0xFF6E6252, false);
             }
             case SCANNING -> {
-                status = Component.translatable("starchitect.hud.inspecting", Texts.critic(critic));
+                status = Component.translatable("starchitect.hud.inspecting");
                 progress = scanner == null ? 1 : scanner.progress();
             }
             default -> {
-                status = Component.translatable("starchitect.hud.writing", Texts.critic(critic));
+                status = Component.translatable("starchitect.hud.writing");
                 progress = 1;
             }
         }
