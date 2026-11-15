@@ -1,0 +1,36 @@
+modLoader="javafml"
+loaderVersion="[51,)"
+license="MIT"
+issueTrackerURL="https://github.com/Loup0007A/starchitect/issues"
+
+[[mods]]
+modId="starchitect"
+version="${version}"
+displayName="Starchitect"
+authors="Loup0007A"
+displayURL="https://github.com/Loup0007A/starchitect"
+logoFile="starchitect_logo.png"
+# Mod 100 % client : inutile sur le serveur, et les serveurs n'ont pas besoin de l'avoir.
+displayTest="IGNORE_ALL_VERSION"
+description='''
+A snobbish architecture critic comes to review your builds.
+Palette, depth, lighting, windows, roof, symmetry, interior, garden: everything is rated,
+then published in the newspaper with 0 to 3 stars. Collect your reviews in the Starchitect Guide.
+100% client-side: works in singleplayer and on any server.
+
+Un critique d'architecture snob vient noter vos constructions, de 0 à 3 étoiles.
+'''
+
+[[dependencies.starchitect]]
+    modId="forge"
+    mandatory=true
+    versionRange="[51,)"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.starchitect]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.21,1.21.2)"
+    ordering="NONE"
+    side="CLIENT"

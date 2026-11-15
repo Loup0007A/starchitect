@@ -1,0 +1,13 @@
+package com.starchitect.platform;
+
+/**
+ * Ce qui diffère d'un loader / d'une version de Minecraft à l'autre. Variante neoforge-1.21.1 ; la référence est
+ * Forge 1.21–1.21.1 ; chaque autre cible a la sienne dans targets/&lt;cible&gt;/overrides (voir tools/port.py).
+ */
+public final class Platform {
+
+    private Platform() {}
+
+    /** Nom de la cible, pour les journaux. */
+    public static final String TARGET = "neoforge-1.21.1";
+}
