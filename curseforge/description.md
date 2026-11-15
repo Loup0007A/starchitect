@@ -10,7 +10,7 @@ A snobbish architecture critic visits your builds, inspects everything and publi
 
 ## Description (Markdown)
 
-![Starchitect](https://raw.githubusercontent.com/Loup0007A/starchitect/main/curseforge/avatar.png)
+![Starchitect](https://raw.githubusercontent.com/Loup0007A/starchitect/main/curseforge/screenshots/02_review_house.png)
 
 ### Your builds finally get the review they deserve.
 
